@@ -3,12 +3,17 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
+from RPMTreader.graph import Graph
+
 class EDRread:
   def __init__(self):
     base_dir = os.path.dirname(os.path.abspath(__file__))
     settings_path = os.path.join(base_dir, "settings", "EDRsettings.json")
     with open(settings_path, "r") as f:
       self.settings= json.load(f)
+      
+    self.drawMapGraph = Graph().drawMapGraph
+    self.drawTofGraph = Graph().drawTofGraph
     
   def EDRread(self, 
               filePath, 
@@ -79,10 +84,10 @@ class EDRread:
     neutrons = np.array(neutrons)
     
     if mapGraphPath is not None:
-      self.drawMapGraph(neutrons, mapGraphPath)
+      self.drawMapGraph(neutrons[:,0:2], mapGraphPath)
       
     if tofGraphPath is not None:
-      self.drawTOFGraph(neutrons, tofGraphPath, tofBinTime)
+      self.drawTofGraph(neutrons[:,2], tofGraphPath, tofBinTime)
   
     if eventCsvPath is not None:
       np.savetxt(
@@ -95,33 +100,4 @@ class EDRread:
         )
     
     return neutrons, t0_pulse
-  
-  def drawMapGraph(self, neutrons, mapGraphPath):
-    plt.figure(figsize=(6,6))
-    hb = plt.hist2d(
-      neutrons[:,0],
-      neutrons[:,1],
-      bins=300,
-      range=[[0,1],[0,1]],
-      cmap='inferno',
-      cmin=1
-      )
-    plt.xlabel("x position")
-    plt.ylabel("y position")
-    plt.title("Neutron distribution (2D histogram)")
-    plt.colorbar(hb[3], label='Counts')
-    plt.grid(True, alpha=0.3)
-    plt.axis("equal")
-    plt.savefig(mapGraphPath)
-    
-  def drawTOFGraph(self, neutrons, tofGraphPath, tofBinTime):
-    tof = neutrons[:,2]
-    bins = np.arange(tof.min(), tof.max()+tofBinTime, tofBinTime)
 
-    plt.figure(figsize=(8,5))
-    plt.hist(tof, bins=bins, histtype='step', color='blue')
-    plt.ylabel("Counts")
-    plt.xlabel("Time (sec)")
-    plt.title("Neutron TOF spectrum")
-    plt.grid(True)
-    plt.savefig(tofGraphPath)

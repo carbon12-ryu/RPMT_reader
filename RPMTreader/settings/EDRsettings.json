@@ -1,0 +1,8 @@
+{
+  "clockFreq":40e6,
+  "effectiveTime":400e-9,
+  "PL_min":128,
+  "PL_max":1024,
+  "PR_min":128,
+  "PR_max":1024
+}

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from RPMTreader.graph import Graph
+from RPMTreader.csv import Csv
 
 class EDRread:
   def __init__(self):
@@ -14,12 +15,15 @@ class EDRread:
       
     self.drawMapGraph = Graph().drawMapGraph
     self.drawTofGraph = Graph().drawTofGraph
+    self.eventCsv = Csv().eventCsv
+    self.tofCsv = Csv().tofCsv
     
   def EDRread(self, 
               filePath, 
               mapGraphPath=None,
               tofGraphPath=None,
               eventCsvPath=None,
+              tofCsvPath=None,
               xSwap = False,
               ySwap = False,
               tofBinTime = 10e-6,
@@ -80,6 +84,10 @@ class EDRread:
     if ySwap:
       ny = 1-ny
       
+    counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
+    time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    tof_data = np.column_stack((time_centers, counts))
+      
     neutrons = np.column_stack([nx, ny, nt])
     neutrons = np.array(neutrons)
     
@@ -90,14 +98,19 @@ class EDRread:
       self.drawTofGraph(neutrons[:,2], tofGraphPath, tofBinTime)
   
     if eventCsvPath is not None:
-      np.savetxt(
+      self.eventCsv(
         eventCsvPath,
         neutrons,
-        delimiter=",",
-        header=f"total KP \n{t0_pulse}\nx,y,time[s]",
-        comments="",
-        fmt="%.6f"
-        )
+        t0_pulse
+      )
+      
+    if tofCsvPath is not None:
+      self.tofCsv(
+        tofCsvPath,
+        tof_data,
+        t0_pulse,
+        tofBinTime
+      )
     
-    return neutrons, t0_pulse
+    return t0_pulse, neutrons, tof_data
 

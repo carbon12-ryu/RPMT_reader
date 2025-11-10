@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 class Graph:
-  def drawMapGraph(self, positions, mapGraphPath):
+  def drawMapGraph(self, positions, mapGraphPath, ROI=None):
     plt.figure(figsize=(6,6))
     hb = plt.hist2d(
       positions[:,0],
@@ -11,6 +11,15 @@ class Graph:
       range=[[0,1],[0,1]],
       cmap='inferno',
       cmin=1
+      )
+    if ROI is not None:
+      plt.scatter(
+        ROI[:,0],
+        ROI[:,1],
+        s=5,
+        color='red',
+        alpha=0.5,
+        label='ROI'
       )
     plt.xlabel("x position")
     plt.ylabel("y position")

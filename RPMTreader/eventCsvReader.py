@@ -53,10 +53,24 @@ class EventCsvReader:
     total_count = len(masked_neutrons)
     
     if mapGraphPath is not None:
-      self.drawMapGraph(neutrons[:,0:2], mapGraphPath, ROI=ROI)
+      self.drawMapGraph(
+        neutrons[:,0:2],
+        mapGraphPath,
+        t0_pulse,
+        total_count,
+        ROI=ROI,
+        timeROImin = timeROImin,
+        timeROImax = timeROImax,
+        )
       
     if tofGraphPath is not None:
-      self.drawTofGraph(masked_neutrons[:,2], tofGraphPath, tofBinTime)
+      self.drawTofGraph(
+        masked_neutrons[:,2],
+        tofGraphPath,
+        t0_pulse,
+        total_count,
+        tofBinTime
+        )
       
     if tofCsvPath is not None:
       self.tofCsv(

@@ -94,10 +94,21 @@ class EDRread:
     total_count = len(neutrons)
     
     if mapGraphPath is not None:
-      self.drawMapGraph(neutrons[:,0:2], mapGraphPath)
+      self.drawMapGraph(
+        neutrons[:,0:2],
+        mapGraphPath,
+        t0_pulse,
+        total_count
+        )
       
     if tofGraphPath is not None:
-      self.drawTofGraph(neutrons[:,2], tofGraphPath, tofBinTime)
+      self.drawTofGraph(
+        neutrons[:,2],
+        tofGraphPath,
+        t0_pulse,
+        total_count,
+        tofBinTime
+        )
   
     if eventCsvPath is not None:
       self.eventCsv(

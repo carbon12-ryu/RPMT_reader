@@ -91,6 +91,8 @@ class EDRread:
     neutrons = np.column_stack([nx, ny, nt])
     neutrons = np.array(neutrons)
     
+    total_count = len(neutrons)
+    
     if mapGraphPath is not None:
       self.drawMapGraph(neutrons[:,0:2], mapGraphPath)
       
@@ -112,5 +114,5 @@ class EDRread:
         tofBinTime
       )
     
-    return t0_pulse, neutrons, tof_data
+    return t0_pulse, neutrons, tof_data, total_count
 

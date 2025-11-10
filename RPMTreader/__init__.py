@@ -4,11 +4,11 @@ from .eventCsvReader import EventCsvReader
 _EDRreader = _EDRreadClass()
 _EventCsvReader = EventCsvReader()
 EDRread = _EDRreader.EDRread
-positionRectROI = _EventCsvReader.positionRectROI
-positionCircleROI = _EventCsvReader.positionCircleROI
+rectROI = _EventCsvReader.rectROI
+circleROI = _EventCsvReader.circleROI
 
 __all__ = [
   'EDRread',
-  'positionRectROI',
-  'positionCircleROI',
+  'rectROI',
+  'circleROI',
   ]

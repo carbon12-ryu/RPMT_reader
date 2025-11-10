@@ -5,8 +5,10 @@ _EDRreader = _EDRreadClass()
 _EventCsvReader = EventCsvReader()
 EDRread = _EDRreader.EDRread
 positionRectROI = _EventCsvReader.positionRectROI
+positionCircleROI = _EventCsvReader.positionCircleROI
 
 __all__ = [
   'EDRread',
-  'positionRectROI'
+  'positionRectROI',
+  'positionCircleROI',
   ]

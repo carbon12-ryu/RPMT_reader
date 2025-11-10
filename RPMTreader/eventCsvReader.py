@@ -11,6 +11,7 @@ class EventCsvReader:
     self.eventCsv = Csv().eventCsv
     self.tofCsv = Csv().tofCsv
     
+    
   def positionRectROI(
     self,
     eventCsvPath,
@@ -63,7 +64,7 @@ class EventCsvReader:
 
       ROI = np.vstack((bottom, right, top, left))
       
-      self.drawMapGraph(neutrons[:,0:2], mapGraphPath, ROI=ROI)
+      self.drawMapGraph(masked_neutrons[:,0:2], mapGraphPath, ROI=ROI)
       
     if tofGraphPath is not None:
       self.drawTofGraph(masked_neutrons[:,2], tofGraphPath, tofBinTime)
@@ -76,4 +77,58 @@ class EventCsvReader:
         tofBinTime
       )
       
-    return neutrons, tof_data
+    return masked_neutrons, tof_data
+  
+  def positionCircleROI(
+    self,
+    eventCsvPath,
+    xcenter,
+    ycenter,
+    radius,
+    mapGraphPath = None,
+    tofGraphPath = None,
+    tofCsvPath = None,
+    tofBinTime = 10e-6
+    ):
+    with open(eventCsvPath, newline='') as f:
+      reader = csv.reader(f)
+      rows = list(reader)
+    t0_pulse = int(rows[1][0])
+    print("t0_num:", t0_pulse)
+
+    data_list = rows[3:]
+    neutrons = np.array(data_list, dtype=float)
+    x = neutrons[:, 0]
+    y = neutrons[:, 1]
+
+    mask = (
+      (x-xcenter)**2+(y-ycenter)**2 <= radius**2
+    )
+    masked_neutrons = neutrons[mask]
+    
+    nt = masked_neutrons[:,1]
+    counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
+    time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    tof_data = np.column_stack((time_centers, counts))
+    
+    if mapGraphPath is not None:
+      n_points = 1000
+      theta = np.linspace(0, 2*np.pi, n_points, endpoint=True)
+      circle_x = xcenter + radius * np.cos(theta)
+      circle_y = ycenter + radius * np.sin(theta)
+      ROI = np.column_stack((circle_x, circle_y))
+      
+      self.drawMapGraph(masked_neutrons[:,0:2], mapGraphPath, ROI=ROI)
+      
+    if tofGraphPath is not None:
+      self.drawTofGraph(masked_neutrons[:,2], tofGraphPath, tofBinTime)
+      
+    if tofCsvPath is not None:
+      self.tofCsv(
+        tofCsvPath,
+        tof_data,
+        t0_pulse,
+        tofBinTime
+      )
+      
+    return masked_neutrons, tof_data

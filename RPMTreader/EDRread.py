@@ -26,6 +26,7 @@ class EDRread:
               tofCsvPath=None,
               xSwap = False,
               ySwap = False,
+              xySwap = False,
               tofBinTime = 10e-6,
               ):
     data = np.fromfile(filePath, dtype=np.uint8).reshape(-1, 8)
@@ -83,6 +84,9 @@ class EDRread:
       
     if ySwap:
       ny = 1-ny
+      
+    if xySwap:
+      nx, ny = ny, nx
       
     counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
     time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])

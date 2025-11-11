@@ -33,7 +33,7 @@ EDRread(filePath, mapGraphPath, tofGraphPath, eventCsvPath, tofCsvPath, xSwap, y
 |------|------|---------|-------------|
 | `filePath` | `str` | — | 読み込む `.edr` ファイルのフルパス |
 | `mapGraphPath` | `str`, optional | `None` | 中性子イベントの2D分布を出力するグラフのファイルパス。拡張子は matplotlib の `savefig` が対応する形式（`.png`, `.pdf`, `.jpeg` など）に限る。空欄の場合、描画されない。 |
-| `tofGraphPath` | `str`, optional | `None` | TOF（Time-of-Flight）スペクトルグラフのファイルパス。拡張子と空欄時は`mapGraphPath`同様。|
+| `tofGraphPath` | `str`, optional | `None` | TOFスペクトルグラフのファイルパス。拡張子と空欄時は`mapGraphPath`同様。|
 | `eventCsvPath` | `str`, optional | `None` | 各イベントの詳細を CSV に出力するパス。拡張子は`.csv`のみ。空欄時は保存されない。 |
 | `tofCsvPath` | `str`, optional | `None` | 時間と中性子数を CSV に出力するパス。拡張子は`.csv`のみ。空欄時は保存されない。|
 | `xSwap` | `bool`, optional | `False` | X軸を反転して表示する場合に `True` に設定。 |
@@ -85,7 +85,7 @@ time[s],counts
 ```
 rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
 ```
-位置に関して四角形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。
+位置に関して四角形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。`EDRread`で出力されたCSVを読み込む。
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `eventCsvPath` | `str` | — | 読み込むイベント CSV ファイルのfull path。EDRread の出力CSV。 |
@@ -94,7 +94,7 @@ rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsv
 | `ymin` | `float` | — | ROIのy最小値。 |
 | `ymax` | `float` | — | ROIのy最大値。 |
 | `mapGraphPath` | `str`, optional | `None` | 2D マップを出力するグラフのファイルパス。抽出範囲も同時に表示される。拡張子は matplotlib が対応する形式 (`.png`, `.pdf`, `.jpeg` 等)。空欄の場合、描画されない。 |
-| `tofGraphPath` | `str`, optional | `None`  | 抽出イベントの TOF（Time-of-Flight）スペクトルを出力するグラフのファイルパス。拡張子・空欄時は mapGraphPath 同様。                          |
+| `tofGraphPath` | `str`, optional | `None`  | 抽出イベントの TOFスペクトルを出力するグラフのファイルパス。拡張子・空欄時は mapGraphPath 同様。                          |
 | `tofCsvPath`   | `str`, optional | `None`  | 抽出 TOF データを CSV に保存するパス。空欄の場合は保存されません。 |
 | `timeROImin`   | `float`, optional | `None`  | TOFの下限（秒）。指定した場合、範囲時間内の中性子のみが出力される。 |
 | `timeROImax`   | `float`, optional | `None`  | TOFの上限（秒）。指定した場合、範囲時間内の中性子のみが出力される。 `timeROImin`が指定されている場合、必須。|
@@ -112,7 +112,7 @@ rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsv
 ```
 rectROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
 ```
-位置に関して円形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。
+位置に関して円形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。`EDRread`で出力されたCSVを読み込む。
 | Name | Type | Default | Description |
 |------|------|---------|-------------|
 | `eventCsvPath` | `str` | — | 読み込むイベント CSV ファイルのfull path。EDRread の出力CSV。 |
@@ -140,3 +140,4 @@ Ryuto Fujitani
 
 ## 開発方法
 mainブランチから個人開発ブランチを作成して開発して下いさい。mainへのマージにはpull requestを作成して下さい。
+バグ報告、機能追加要望等はissueへ

@@ -110,7 +110,7 @@ rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsv
 
 # circleROI
 ```
-rectROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
+circleROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
 ```
 位置に関して円形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。`EDRread`で出力されたCSVを読み込む。
 | Name | Type | Default | Description |

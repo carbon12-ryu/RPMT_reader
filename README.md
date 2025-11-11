@@ -139,5 +139,5 @@ rectROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofC
 Ryuto Fujitani
 
 ## 開発方法
-mainブランチから個人開発ブランチを作成して開発して下いさい。mainへのマージにはpull requestを作成して下さい。
+リポジトリをforkして、mainブランチへpull requestを作成して下さい。
 バグ報告、機能追加要望等はissueへ

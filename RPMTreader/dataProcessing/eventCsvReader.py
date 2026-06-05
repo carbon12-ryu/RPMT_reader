@@ -1,8 +1,8 @@
 import numpy as np
 import csv
 
-from RPMTreader.graph import Graph
-from RPMTreader.csv import Csv
+from RPMTreader.dataProcessing.graph import Graph
+from RPMTreader.dataProcessing.csv import Csv
 
 class EventCsvReader:
   def __init__(self):

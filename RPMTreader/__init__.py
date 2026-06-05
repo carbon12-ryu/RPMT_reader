@@ -1,5 +1,5 @@
-from .EDRread import EDRread as _EDRreadClass
-from .eventCsvReader import EventCsvReader
+from .dataProcessing.EDRread import EDRread as _EDRreadClass
+from .dataProcessing.eventCsvReader import EventCsvReader
 
 _EDRreader = _EDRreadClass()
 _EventCsvReader = EventCsvReader()

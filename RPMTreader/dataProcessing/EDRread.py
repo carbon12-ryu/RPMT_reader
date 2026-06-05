@@ -3,8 +3,8 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
-from RPMTreader.graph import Graph
-from RPMTreader.csv import Csv
+from RPMTreader.dataProcessing.graph import Graph
+from RPMTreader.dataProcessing.csv import Csv
 
 class EDRread:
   def __init__(self):

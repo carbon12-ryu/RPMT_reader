@@ -2,8 +2,9 @@
 
 <a href="README_EN.md">English README</a>
 
-RPMTをneunetで利用した場合に得られるedrファイルを位置と時間を持つイベントデータに変換し、CSVに出力します。
-また、出力されたCSVに位置のROIや時間のROIを掛けることができます。
+NEUNETとGATENETの制御、また得られたedrファイル（バイナリで書かれたイベントデータ）を扱える形に変換するコードです。
+LaboViewで出力されるedrファイルと同じ形式のファイルを出力し、変換できます。
+位置や時間のROIを掛けたうえでCSV、グラフへの出力が可能です。
 
 本コードはpythonライブラリとして利用することができ、
 pythonコード内に組み込むことが可能です。
@@ -14,26 +15,51 @@ Tips:
 - 縦検出器または横検出器の識別情報  
 - キッカーパルスからの経過時間
 
+***重要***
+ 制御を行うPCのIPアドレスのネットワークマスクをNEUNETと同じに設定して下さい（例えば`192.168.0.100`）。windowsの設定等から変更できます。
+ 変更していない場合、NEUNETとGATENETが同じネットワーク上に居ないとみなされ認識されません。
 
 ## インストール法、始め方
 0. python と git をインストールする。
 1. RPMT_reader のプログラムを置きたい任意のフォルダに移動。
 `cd {任意のフォルダ名}`
 2. `git clone https://github.com/carbon12-ryu/RPMT_reader.git`
-3. `pip install -e ./RPMT_reader`
+3. `pip install -e ./RPMT_reader` (注意：VScodeなどで実行する場合、pythonの実行環境がシステムのものと違う場合があるので `& "C:\Program Files (x86)\Microsoft Visual Studio\Shared\Python37_64\python.exe" -m pip install -e "C:\Users\NAME\Documents\RPMT_reader"`の様にインストールしてください。)
+4. 必要なpythonモジュールをインストールする。requirement.txtがあるフォルダで次のコマンドで自動でインストールされる。
+``` pip install -r requirements.txt ```
 
-`pip install ./RPMT_reader` としても利用できますが、モジュールの中身をローカルで内容を変更しても反映されません。
+`pip install ./RPMT_reader` としても利用できますが、モジュールの中身をローカルで内容を変更しても反映されないため`-e`オプション付きでインストールをお勧めします。
+
 
 ## 使い方
 1. インストール後にpythonファイル内で`import RPMTreader`を宣言する。
 2. `RPMTreader.EDRread()`の様に呼び出して利用する。
 
-サンプルコード https://github.com/carbon12-ryu/RPMT_reader_sampleCode
+## 制御系関数の説明
+## .controller.GATENET.GATENET
+```GATENET```
 
-## 各関数の説明
-# EDRread
+| Method                | Arguments                  | Returns | Description          |
+| --------------------- | -------------------------- | ------- | -------------------- |
+| `config()`            | -                          | `str`   | ROM情報を出力         |
+| `setTime()`           | -                          | -       | GATENETに現在時刻をセット     |
+| `setTimeLLD(LLD, time_low, time_hi)`        | `LLD: int`, `time_low: int`, `time_hi: int` | - | LLD, time_low, time_hiをセット |
+
+## .controller.GATENET.NEUNET
+```NEUNET```
+
+| Method                | Arguments                  | Returns | Description          |
+| --------------------- | -------------------------- | ------- | -------------------- |
+| `config()`            | -                          | `str`   | ROM情報を出力         |
+| `measure(filePath, KP)`| `filePath: str`, `KP: int`| -       | 指定KP（キッカーパルス数）の測定を開始、filePathにバイナリとして結果は出力 |
+| `measureGraph(filePath, KP)`| `filePath: str`, `KP: int`| -       | 測定を開始、測定中のグラフも出力される |
+
+
+## 解析系関数の説明
+## .dataProcessing.EDRread
+## EDRread
 ```
-EDRread(filePath, mapGraphPath, tofGraphPath, eventCsvPath, tofCsvPath, xSwap, ySwap, tofBinTime)
+EDRread().EDRread(filePath, mapGraphPath, tofGraphPath, eventCsvPath, tofCsvPath, xSwap, ySwap, tofBinTime)
 ```
 `.edr`ファイルを読み込む。`.edr`は波高データであるためこれを中性子イベントデータに解釈しなおす。解釈したデータを二次元マップ、TOFスペクトルとしての出力も行う。
 
@@ -90,9 +116,10 @@ time[s],counts
 | `PR_min` | 128 | 右側波高の最小値。これより小さいものはノイズとして処理。 |
 | `PR_max` | 1024 | 右側波高の最大値。これより大きいものはノイズとして処理。 |
 
-# rectROI
+
+## .dataProcessing.eventCsvReader
 ```
-rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
+EventCsvReader().rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
 ```
 位置に関して四角形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。`EDRread`で出力されたCSVを読み込む。
 | Name | Type | Default | Description |
@@ -119,7 +146,7 @@ rectROI(eventCsvPath, xmin, xmax, ymin, ymax, mapGraphPath, tofGraphPath, tofCsv
 
 # circleROI
 ```
-rectROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
+EventCsvReader().rectROI(eventCsvPath, xcenter, ycenter, radius, mapGraphPath, tofGraphPath, tofCsvPath, timeROImin, timeROImax, tofBinTime)
 ```
 位置に関して円形のROIを掛ける関数。同時に、中性子到達時間のROIを掛けることも可能。`EDRread`で出力されたCSVを読み込む。
 | Name | Type | Default | Description |

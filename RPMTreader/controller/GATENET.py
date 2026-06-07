@@ -1,6 +1,3 @@
-import socket
-import time
-
 from .UDPreadRom import UDPreadRom
 from .UDPwriteRom import UDPwriteRom
 

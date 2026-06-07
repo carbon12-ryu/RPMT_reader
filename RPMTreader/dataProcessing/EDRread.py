@@ -1,15 +1,16 @@
 import os
 import json
-import matplotlib.pyplot as plt
+from pathlib import Path
 import numpy as np
 
-from RPMTreader.graph import Graph
-from RPMTreader.csv import Csv
+from RPMTreader.dataProcessing.graph import Graph
+from RPMTreader.dataProcessing.csv import Csv
 
 class EDRread:
   def __init__(self):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    settings_path = os.path.join(base_dir, "settings", "EDRsettings.json")
+    base_dir = Path(__file__).resolve().parent
+    settings_path = os.path.join(base_dir, "EDRsettings.json")
+    
     with open(settings_path, "r") as f:
       self.settings= json.load(f)
       
@@ -87,10 +88,13 @@ class EDRread:
       
     if xySwap:
       nx, ny = ny, nx
-      
-    counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
-    time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-    tof_data = np.column_stack((time_centers, counts))
+    
+    if len(nt) == 0:
+      tof_data = np.empty((0, 2))
+    else:
+      counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max() + tofBinTime, tofBinTime))
+      time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+      tof_data = np.column_stack((time_centers, counts))
       
     neutrons = np.column_stack([nx, ny, nt])
     neutrons = np.array(neutrons)

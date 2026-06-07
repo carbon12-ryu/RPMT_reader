@@ -1,23 +1,12 @@
 import socket
 from datetime import datetime, timedelta
 
-
-# UDPでメモリー各領域の読み出し命令文
-cmd_histogram = bytes.fromhex("ff c0 00 40 00 00 00 00") # ヒストグラム ROM 用バッファ (アドレス: 0x0000, 長さ: 64 byte = 0x40)
-cmd_mod_info = bytes.fromhex("ff c0 00 40 00 00 00 40") # モジュール情報 ROM 用バッファ (アドレス: 0x0040, 長さ: 64 byte = 0x40)
-cmd_config = bytes.fromhex("ff c0 00 20 00 00 00 80") # モジュール現設定情報読み出し領域 (アドレス: 0x0080, 長さ: 32 byte = 0x20)
-cmd_readwrite = bytes.fromhex("ff c0 00 01 00 00 01 00") # ROM 読み出し、書き込み指令領域 (アドレス: 0x0100, 長さ: 1 byte = 0x01)
-cmd_control = bytes.fromhex("ff c0 00 08 00 00 01 80") # メモリ使用制御領域 (アドレス: 0x0180, 長さ: 8 byte = 0x08)
-cmd_gatenet_status = bytes.fromhex("ff c0 00 03 00 00 01 88") # ステータスレジスタ ＃＃GATENET用 (アドレス: 0x0188, 長さ: 3 byte = 0x03)
-cmd_gatenet_pulse = bytes.fromhex("ff c0 00 05 00 00 01 8b") # パルス ID カウンター ＃＃GATENET用 (アドレス: 0x018B, 長さ: 5 byte = 0x05)
-cmd_gatenet_time = bytes.fromhex("ff c0 00 07 00 00 01 90") # 装置時刻相対カウンター ＃＃GATENET用 (アドレス: 0x0190, 長さ: 7 byte = 0x07)
-cmd_sitcp_lld = bytes.fromhex("ff c0 00 08 00 00 01 98") # SiTCP 側の LLD, 時間制限 (アドレス: 0x0198, 長さ: 8 byte = 0x08)
-
-class Status:
+class UDPreadRom:
   def __init__(self, TARGET_IP, PORT):
     self.ip = TARGET_IP
     self.port = PORT
     self.cmd_dict = {
+      "readMode"      : "ff 80 01 01 00 00 01 00 5a", #NEUNETを読み取りモードにする
       "histgram"      : "ff c0 00 40 00 00 00 00", # ヒストグラム ROM 用バッファ (アドレス: 0x0000, 長さ: 64 byte = 0x40)
       "moduleInfo"    : "ff c0 00 40 00 00 00 40", # モジュール情報 ROM 用バッファ (アドレス: 0x0040, 長さ: 64 byte = 0x40)
       "moduleConf"    : "ff c0 00 20 00 00 00 80", # モジュール現設定情報読み出し領域 (アドレス: 0x0080, 長さ: 32 byte = 0x20)
@@ -30,6 +19,7 @@ class Status:
     }
     
   def sendUDP(self, cmd_str):
+    bytes.fromhex(self.cmd_dict["readMode"])
     cmd = bytes.fromhex(cmd_str)
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
       sock.settimeout(1)
@@ -40,15 +30,6 @@ class Status:
     return data_body
   
   def getAll(self):
-    # text1 = self.histgram()
-    # text2 = self.moduleInfo()
-    # text3 = self.moduleConf()
-    # text4 = self.readWrite()
-    # text5 = self.controll()
-    # text6 = self.gatenetStatus()
-    # text7 = self.gatenetPulse()
-    # text8 = self.gatenetTime()
-    # text9 = self.sitcpLLD()
     texts = [
       self.histgram()[0],
       self.moduleInfo()[0],
@@ -60,8 +41,10 @@ class Status:
       self.gatenetTime()[0],
       self.sitcpLLD()[0]
     ]
+    text_show = ""
     for text in texts:
-      print(text)
+      text_show += text
+    return text_show
   
   ### ヒストグラムROM用バッファ (0x00 - 0x3f) ###
   def histgram(self):
@@ -95,9 +78,8 @@ class Status:
     reserved = mod_info_rom[48:60]
     used_hour = mod_info_rom[60:64]
 
-    comment_str = comment.decode('utf-8').rstrip('\x00')
     text += f" MAC_address : {':'.join(f'{b:02x}' for b in MAC_address).upper()}\n"
-    text += f" Comment : {comment_str}\n"
+    text += f" Comment : {comment}\n"
     text += f" used_hour : {int.from_bytes(used_hour, byteorder='big')}\n"
     text += "-" * 50
     text += "\n"
@@ -135,7 +117,7 @@ class Status:
     text += f" MAC_address  : {':'.join(f'{b:02x}' for b in MAC_address).upper()}\n"
     text += f" IP_adress   : {config_rom[18]}.{config_rom[19]}.{config_rom[20]}.{config_rom[21]}\n"
     text += f" TCP Port    : {int.from_bytes(TCPP, byteorder='big')}\n"
-    text += f" UDP Port  : 0x{UDPP.hex()}"
+    text += f" UDP Port  : 0x{UDPP.hex()}\n"
     text += f" RTO (Retransmit TO) : 0x{RTO.hex()}\n"
     text += f" MSS (Max Seg Size)  : {MSS}\n"
     text += f" FIFO Overflow Count : {FE}\n"
@@ -246,8 +228,8 @@ class Status:
     TMH = sitcp_rom[2:5]
     TML = sitcp_rom[5:8]
     text += f" LLD  : {int.from_bytes(LLD, byteorder='big')}\n"
-    text += f" TMH  : {int.from_bytes(TMH, byteorder='big')}\n"
-    text += f" TML  : {int.from_bytes(TML, byteorder='big')}\n"
+    text += f" TMH (time_high)  : {int.from_bytes(TMH, byteorder='big')}\n"
+    text += f" TML (time_low) : {int.from_bytes(TML, byteorder='big')}\n"
     text += "-" * 50
     text += "\n"
     return text, {
@@ -256,6 +238,7 @@ class Status:
       "TML": TML,
     }
   
-TARGET_IP = "192.168.0.16"
-PORT = 0x1234
-Status(TARGET_IP, PORT).getAll()
+# TARGET_IP = "192.168.0.15"
+# PORT = 0x1234
+# text = UDPreadRom(TARGET_IP, PORT).getAll()
+# print(text)

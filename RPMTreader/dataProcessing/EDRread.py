@@ -8,8 +8,8 @@ from RPMTreader.dataProcessing.csv import Csv
 
 class EDRread:
   def __init__(self):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    settings_path = os.path.join(base_dir, "settings", "EDRsettings.json")
+    base_dir = os.getcwd()
+    settings_path = os.path.join(base_dir, "EDRsettings.json")
     with open(settings_path, "r") as f:
       self.settings= json.load(f)
       

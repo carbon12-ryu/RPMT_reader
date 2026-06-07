@@ -4,9 +4,6 @@ import time
 from .UDPreadRom import UDPreadRom
 from .UDPwriteRom import UDPwriteRom
 
-NeunetUR = UDPreadRom("192.168.0.16", 0x1234)
-NeunetUW = UDPwriteRom("192.168.0.16", 0x1234)
-
 class NEUNET:
   def __init__(self):
     self.IP = "192.168.0.16"

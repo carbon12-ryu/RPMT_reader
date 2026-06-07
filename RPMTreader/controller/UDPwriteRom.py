@@ -50,10 +50,10 @@ class UDPwriteRom:
     return None
   
   ### LLD, time_low, time_high###
-  def setTimeLLD(self, LLD, time_low, time_high):
+  def setTimeLLD(self, LLD, time_low, time_hi):
     text = (
         f"{LLD:04x}"
-        f"{time_high:06x}"
+        f"{time_hi:06x}"
         f"{time_low:06x}"
     )
     writeMode = self.sendUDP(self.cmd_dict["writeMode"])
@@ -64,8 +64,3 @@ class UDPwriteRom:
   def startMes(self):
     res = self.sendUDP(self.cmd_dict["startMes"])
     return None
-  
-# TARGET_IP = "192.168.0.16"
-# PORT = 0x1234
-# UDPwriteRom(TARGET_IP, PORT).setTime()
-# UDPwriteRom(TARGET_IP, PORT).setTimeLLD(0, 0, 160000)

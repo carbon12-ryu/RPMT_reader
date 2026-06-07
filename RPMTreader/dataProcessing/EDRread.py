@@ -87,10 +87,13 @@ class EDRread:
       
     if xySwap:
       nx, ny = ny, nx
-      
-    counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
-    time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
-    tof_data = np.column_stack((time_centers, counts))
+    
+    if len(nt) == 0:
+      tof_data = np.empty((0, 2))
+    else:
+      counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max() + tofBinTime, tofBinTime))
+      time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+      tof_data = np.column_stack((time_centers, counts))
       
     neutrons = np.column_stack([nx, ny, nt])
     neutrons = np.array(neutrons)

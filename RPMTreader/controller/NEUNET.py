@@ -17,6 +17,7 @@ class NEUNET:
     self.NeunetUR = UDPreadRom(self.IP, self.UDPport)
     self.NeunetUW = UDPwriteRom(self.IP, self.UDPport)
     self.EDRread = EDRread()
+    self.running = False
     
   def config(self):
     text = self.NeunetUR.getAll()
@@ -26,6 +27,7 @@ class NEUNET:
   def measure(self, filePath, KP):
     self.NeunetUW.startMes()
     count_5b = 0
+    self.running = True
     cmd = bytes.fromhex("a3 00 00 00 00 07 a1 20")
     with open(filePath, "ab") as f:
       with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
@@ -40,13 +42,15 @@ class NEUNET:
           f.write(payload)
           f.flush()
           print(f"\rcurrent KP: {count_5b}", end="", flush=True)
+    self.running = False
+    print("finish RPMT")
     return None
   
-  def graph(self, filePath):
+  def graph(self, filePath, graphPath):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     plt.ion()
     
-    while plt.fignum_exists(fig.number):
+    while plt.fignum_exists(fig.number) and self.running:
       if not os.path.exists(filePath) or os.path.getsize(filePath) == 0:
         plt.pause(0.05)
         continue 
@@ -93,15 +97,16 @@ class NEUNET:
         print(e)
       plt.pause(0.05)
     plt.ioff()
-    plt.show()
+    if graphPath is not None:
+      plt.savefig(graphPath)
+    plt.close()
     
-  def measureGraph(self, filePath, KP):
+  def measureGraph(self, filePath, KP, graphPath=None):
     measure_thread = threading.Thread(
         target=self.measure,
         args=(filePath, KP),
         daemon=True
     )
     measure_thread.start()
-    self.graph(filePath)
-    measure_thread.join() 
+    self.graph(filePath, graphPath)
         

@@ -1,6 +1,6 @@
 import os
 import json
-import matplotlib.pyplot as plt
+from pathlib import Path
 import numpy as np
 
 from RPMTreader.dataProcessing.graph import Graph
@@ -8,8 +8,9 @@ from RPMTreader.dataProcessing.csv import Csv
 
 class EDRread:
   def __init__(self):
-    base_dir = os.getcwd()
+    base_dir = Path(__file__).resolve().parent
     settings_path = os.path.join(base_dir, "EDRsettings.json")
+    
     with open(settings_path, "r") as f:
       self.settings= json.load(f)
       

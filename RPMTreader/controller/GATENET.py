@@ -9,6 +9,11 @@ class GATENET:
     self.GatenetUR = UDPreadRom(self.IP, self.UDPport)
     self.GatenetUW = UDPwriteRom(self.IP, self.UDPport)
     
+  def setIP(self, new_ip):
+    self.IP = new_ip
+    self.GatenetUR.ip = new_ip
+    self.GatenetUW.ip = new_ip
+    
   def config(self):
     text = self.GatenetUR.getAll()
     print(text)

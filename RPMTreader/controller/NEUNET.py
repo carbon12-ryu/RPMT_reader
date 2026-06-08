@@ -19,9 +19,15 @@ class NEUNET:
     self.EDRread = EDRread()
     self.running = False
     
+  def setIP(self, new_ip):
+      self.IP = new_ip
+      self.NeunetUR.ip = new_ip
+      self.NeunetUW.ip = new_ip
+      
   def config(self):
     text = self.NeunetUR.getAll()
     print(text)
+    print(self.IP)
     return None
   
   def measure(self, filePath, KP):
@@ -49,6 +55,7 @@ class NEUNET:
   def graph(self, filePath, graphPath):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
     plt.ion()
+    cbar = None
     
     while plt.fignum_exists(fig.number) and self.running:
       if not os.path.exists(filePath) or os.path.getsize(filePath) == 0:
@@ -70,12 +77,18 @@ class NEUNET:
         ax1.set_aspect('equal')
 
         if len(positions) > 0:
+          if cbar is not None:
+            cbar.remove()
           hb = ax1.hist2d(
               positions[:, 0], positions[:, 1],
               bins=100, range=[[0, 1], [0, 1]],
               cmap='inferno', cmin=1
           )
-          fig.colorbar(hb[3], ax=ax1, label='Counts')
+          cbar = fig.colorbar(
+              hb[3],
+              ax=ax1,
+              label="Counts"
+          )
           
         text_str = f"t0 pulse: {t0_pulse}\nTotal: {total_count}"
         ax1.text(

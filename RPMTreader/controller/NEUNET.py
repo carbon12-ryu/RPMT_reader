@@ -27,7 +27,6 @@ class NEUNET:
   def config(self):
     text = self.NeunetUR.getAll()
     print(text)
-    print(self.IP)
     return None
   
   def measure(self, filePath, KP):

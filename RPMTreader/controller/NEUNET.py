@@ -42,15 +42,18 @@ class NEUNET:
           sock.sendall(cmd)
           header = sock.recv(4)
           length = int.from_bytes(header, "big")*2
-          if not (length > 0 and length%8 ==0 ):
-            print("length error")
-            continue
-          payload = sock.recv(4+length)
-          if any(h not in (0x5A, 0x5B, 0x5C) for h in payload[::8]):
-            print("data mismutch")
-            continue
-          count_5b += payload[::8].count(0x5B)
-          f.write(payload)
+          payload = sock.recv(4+length) if length > 0 else b""
+
+          events = bytearray()
+          pos = 0
+          while pos + 8 <= len(payload):
+              if payload[pos] in [0x5a, 0x5b, 0x5c]:
+                  events.extend(payload[pos:pos+8])
+                  pos += 8
+              else:
+                  pos += 1
+          count_5b += events[::8].count(0x5B)
+          f.write(events)
           f.flush()
           print(f"\rcurrent KP: {count_5b}", end="", flush=True)
     self.running = False

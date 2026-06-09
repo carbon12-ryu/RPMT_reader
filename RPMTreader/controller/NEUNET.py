@@ -43,9 +43,11 @@ class NEUNET:
           header = sock.recv(4)
           length = int.from_bytes(header, "big")*2
           if not (length > 0 and length%8 ==0 ):
+            print("length error")
             continue
           payload = sock.recv(4+length)
           if any(h not in (0x5A, 0x5B, 0x5C) for h in payload[::8]):
+            print("data mismutch")
             continue
           count_5b += payload[::8].count(0x5B)
           f.write(payload)

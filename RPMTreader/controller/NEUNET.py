@@ -42,7 +42,9 @@ class NEUNET:
           sock.sendall(cmd)
           header = sock.recv(4)
           length = int.from_bytes(header, "big")*2
-          payload = sock.recv(4+length) if (length > 0 and length%8 ==0 )  else b""
+          if not (length > 0 and length%8 ==0 ):
+            continue
+          payload = sock.recv(4+length)
           if any(h not in (0x5A, 0x5B, 0x5C) for h in payload[::8]):
             continue
           count_5b += payload[::8].count(0x5B)

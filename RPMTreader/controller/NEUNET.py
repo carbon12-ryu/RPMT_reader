@@ -61,7 +61,7 @@ class NEUNET:
         plt.pause(0.05)
         continue 
       try:
-        tofBinTime = 10e-6
+        tofBinTime = 100e-6
         t0_pulse, neutrons, tof_data, total_count = self.EDRread.EDRread(filePath, tofBinTime = tofBinTime)
         positions = neutrons[:, 0:2]
         times = neutrons[:,2]

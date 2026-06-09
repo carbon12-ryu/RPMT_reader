@@ -66,7 +66,7 @@ class Graph:
     if len(times) > 1:
       bins = np.arange(times.min(), times.max()+tofBinTime, tofBinTime)
       plt.hist(times, bins=bins, histtype='step', color='blue')
-      text = f"t0 pulse: {t0_pulse}\nTotal: {total_count}"
+    text = f"t0 pulse: {t0_pulse}\nTotal: {total_count}"
     plt.text(
       0.98, 0.98,  # 右上に相対位置で配置
       text,

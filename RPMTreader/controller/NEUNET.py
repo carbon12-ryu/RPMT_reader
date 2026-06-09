@@ -83,11 +83,6 @@ class NEUNET:
               bins=100, range=[[0, 1], [0, 1]],
               cmap='inferno', cmin=1
           )
-          cbar = fig.colorbar(
-              hb[3],
-              ax=ax1,
-              label="Counts"
-          )
           
         text_str = f"t0 pulse: {t0_pulse}\nTotal: {total_count}"
         ax1.text(

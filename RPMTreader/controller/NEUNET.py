@@ -43,8 +43,17 @@ class NEUNET:
           header = sock.recv(4)
           length = int.from_bytes(header, "big")*2
           payload = sock.recv(4+length) if length > 0 else b""
-          count_5b += payload[::8].count(0x5B)
-          f.write(payload)
+
+          events = bytearray()
+          pos = 0
+          while pos + 8 <= len(payload):
+              if payload[pos] in [0x5a, 0x5b, 0x5c]:
+                  events.extend(payload[pos:pos+8])
+                  pos += 8
+              else:
+                  pos += 1
+          count_5b += events[::8].count(0x5B)
+          f.write(events)
           f.flush()
           print(f"\rcurrent KP: {count_5b}", end="", flush=True)
     self.running = False

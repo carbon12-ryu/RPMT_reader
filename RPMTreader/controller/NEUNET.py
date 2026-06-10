@@ -46,8 +46,11 @@ class NEUNET:
 
           events = bytearray()
           pos = 0
-          while pos + 8 <= len(payload):
-              if payload[pos] in [0x5a, 0x5b, 0x5c]:
+          while pos + 16 <= len(payload):
+              if (
+                payload[pos] in [0x5a, 0x5b, 0x5c]
+                and payload[pos+8] in [0x5a, 0x5b, 0x5c]
+              ):
                   events.extend(payload[pos:pos+8])
                   pos += 8
               else:

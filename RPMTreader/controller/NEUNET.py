@@ -20,9 +20,9 @@ class NEUNET:
     self.running = False
     
   def setIP(self, new_ip):
-      self.IP = new_ip
-      self.NeunetUR.ip = new_ip
-      self.NeunetUW.ip = new_ip
+    self.IP = new_ip
+    self.NeunetUR.ip = new_ip
+    self.NeunetUW.ip = new_ip
       
   def config(self):
     text = self.NeunetUR.getAll()
@@ -47,11 +47,11 @@ class NEUNET:
           events = bytearray()
           pos = 0
           while pos + 8 <= len(payload):
-              if payload[pos] in [0x5a, 0x5b, 0x5c]:
-                  events.extend(payload[pos:pos+8])
-                  pos += 8
-              else:
-                  pos += 1
+            if payload[pos] in [0x5a, 0x5b, 0x5c]:
+              events.extend(payload[pos:pos+8])
+              pos += 8
+            else:
+              pos += 1
           count_5b += events[::8].count(0x5B)
           f.write(events)
           f.flush()

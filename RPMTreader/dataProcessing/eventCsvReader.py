@@ -45,8 +45,13 @@ class EventCsvReader:
         
     masked_neutrons = neutrons[mask]
     
-    nt = masked_neutrons[:,1]
-    counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
+    nt = masked_neutrons[:,2]
+
+    if (timeROImin is not None) and (timeROImax is not None):
+      counts, bin_edges = np.histogram(nt, bins=np.arange(timeROImin, timeROImax+tofBinTime, tofBinTime))
+    else:
+      counts, bin_edges = np.histogram(nt, bins=np.arange(nt.min(), nt.max()+tofBinTime, tofBinTime))
+      
     time_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     tof_data = np.column_stack((time_centers, counts))
     
